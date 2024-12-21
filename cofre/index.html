@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego del Código Oculto</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            background: linear-gradient(135deg, #5f2b8c, #9b70d7); /* Fondo con tonos morados */
+            color: white;
+        }
+        h1 {
+            color: #d39be7; /* Título en morado suave */
+            margin-top: 20px;
+        }
+        #clue {
+            font-size: 1.2em;
+            margin: 20px 0;
+        }
+        #input-code {
+            font-size: 1.5em;
+            padding: 5px;
+            width: 520px;
+            text-align: center;
+            border: 2px solid #bda0d9; /* Lila */
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            margin-top: 10px;
+            background-color: #bda0d9; /* Lila */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #6a4c9c; /* Morado */
+            color: white;
+        }
+        #message {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #d39be7; /* Mensaje en morado suave */
+        }
+        .feedback {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+            gap: 10px;
+        }
+        .feedback span {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 50%;
+            color: white;
+        }
+        .correct {
+            background-color: green; /* Correcto en verde */
+        }
+        .misplaced {
+            background-color: orange; /* Desplazado en naranja */
+        }
+        .wrong {
+            background-color: red; /* Incorrecto en rojo */
+        }
+    </style>
+</head>
+<body>
+    <h1>El Cofre Cerrado</h1>
+    <input type="text" id="input-code" maxlength="4" placeholder="Ingresa el código">
+    <br>
+    <button onclick="checkCode()">Abrir Cofre</button>
+    <p id="message"></p>
+    <div class="feedback" id="feedback"></div>
+    <p id="next-clue" style="display: none;">¡Correcto! Aquí está tu pista: Busca ahora donde la magia de las recetas cobran vida.</p>
+
+    <br><br>
+    <button onclick="goBack()">Volver al Índice Principal</button>
+
+    <script>
+        const secretCode = "1573"; // Código secreto
+        const feedbackContainer = document.getElementById('feedback');
+
+        function checkCode() {
+            const userInput = document.getElementById('input-code').value;
+            const message = document.getElementById('message');
+            const nextClue = document.getElementById('next-clue');
+
+            feedbackContainer.innerHTML = ""; // Limpia los resultados anteriores
+
+            if (userInput.length !== secretCode.length) {
+                message.textContent = "El código debe tener 4 dígitos.";
+                message.style.color = "#6a4c9c"; /* Morado */
+                return;
+            }
+
+            let allCorrect = true; // Variable para verificar si todos los dígitos están correctos
+
+            for (let i = 0; i < secretCode.length; i++) {
+                const userDigit = userInput[i];
+                const feedback = document.createElement('span');
+
+                if (userDigit === secretCode[i]) {
+                    feedback.textContent = userDigit;
+                    feedback.className = "correct";
+                } else if (secretCode.includes(userDigit)) {
+                    feedback.textContent = userDigit;
+                    feedback.className = "misplaced";
+                    allCorrect = false;
+                } else {
+                    feedback.textContent = userDigit;
+                    feedback.className = "wrong";
+                    allCorrect = false;
+                }
+
+                feedbackContainer.appendChild(feedback);
+            }
+
+            if (allCorrect) {
+                message.textContent = "¡El cofre se ha abierto!";
+                message.style.color = "#d3aad3"; /* Lila claro */
+                nextClue.style.display = "block";
+            } else {
+                message.textContent = "Sigue intentando...";
+                message.style.color = "white"; /* Morado claro */
+            }
+        }
+
+        function goBack() {
+            window.location.href = "../index.html"; // Redirige al índice principal
+        }
+    </script>
+</body>
+</html>

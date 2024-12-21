@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego del Enigma</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f7f7f7;
+            padding: 20px;
+        }
+        h1 {
+            color: #d39be7; /* Morado suave */
+        }
+        #enigma {
+            margin: 20px;
+            font-size: 1.5em;
+            color: #444;
+        }
+        input[type="text"] {
+            padding: 8px;
+            font-size: 1em;
+            margin-top: 10px;
+            width: 300px;
+            text-align: center;
+            border: 2px solid #9b70d7; /* Lila */
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1.1em;
+            background-color: #9b70d7; /* Lila */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #6a4c9c; /* Morado */
+            color: white;
+        }
+        #message {
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+        #clue {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: green;
+            margin-top: 20px;
+        }
+        .clue-letter {
+            font-size: 1.5em;
+            color: darkblue;
+            font-weight: bold;
+        }
+        #mapa {
+            margin-top: 20px;
+            max-width: 90%;
+            display: none;
+        }
+        #main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Juego del Enigma</h1>
+    <div id="main-container">
+        <div id="enigma">
+            <p id="question">Acertijo 1: Tiene ciudades, pero no casas; montañas, pero no árboles; agua, pero no peces. ¿Qué soy?</p>
+            <input type="text" id="answer" placeholder="Escribe tu respuesta">
+            <button onclick="checkAnswer()">Comprobar Respuesta</button>
+            <p id="message"></p>
+        </div>
+
+        <div id="clue" style="display: none;">
+            <p>¡Correcto! Pasa al siguiente juego</p>
+        </div>
+
+        <div id="mapa" style="display: none;">
+            <!-- Asegúrate de que la ruta aquí sea correcta -->
+            <img src="mapa_vacio_paris.png" alt="Mapa de París vacío">
+        </div>
+
+        <button onclick="goBack()">Volver al Índice Principal</button>
+    </div>
+
+    <script>
+        // Respuesta correcta del primer acertijo
+        const correctAnswer = "mapa";
+
+        function checkAnswer() {
+            const answer = document.getElementById("answer").value.trim().toLowerCase();
+            const message = document.getElementById("message");
+
+            if (answer === correctAnswer) {
+                message.textContent = "¡Respuesta Correcta!";
+                message.style.color = "green";
+                revealClue();  // Mostrar la pista y el mapa
+            } else {
+                message.textContent = "Respuesta Incorrecta. Intenta de nuevo.";
+                message.style.color = "red";
+            }
+        }
+
+        function revealClue() {
+            // Mostrar la pista y el mapa al acertar la respuesta
+            document.getElementById("clue").style.display = "block";
+            document.getElementById("mapa").style.display = "block";  // Mostrar el mapa vacío
+        }
+
+        function goBack() {
+            window.location.href = "../index.html"; // Redirigir al índice principal
+        }
+    </script>
+</body>
+</html>

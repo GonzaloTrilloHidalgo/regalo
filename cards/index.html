@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Cards</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            background: linear-gradient(135deg, #5f2b8c, #9b70d7); /* Fondo con tonos morados */
+            color: white;
+        }
+        h1 {
+            color: #d39be7; /* Título en morado suave */
+            margin-top: 20px;
+        }
+        .memory-game {
+            display: grid;
+            grid-template-columns: repeat(6, 100px);
+            gap: 15px;
+            justify-content: center;
+            margin: 20px auto;
+            width: max-content;
+        }
+        .memory-card {
+            width: 100px;
+            height: 100px;
+            background-color: #87CEEB; /* Fondo azul claro para las cartas */
+            border-radius: 8px;
+            cursor: pointer;
+            position: relative;
+            transform: scale(1);
+            transition: transform 0.5s ease;
+            transform-style: preserve-3d;
+        }
+        .memory-card.flip {
+            transform: rotateY(180deg);
+        }
+        .memory-card.correct {
+            background-color: #98FB98 !important; /* Verde claro para las cartas correctas */
+            border: 2px solid #228B22;
+        }
+        .front-face, .back-face {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            position: absolute;
+            backface-visibility: hidden;
+        }
+        .front-face {
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            color: #333;
+            transform: rotateY(180deg);
+        }
+        .back-face {
+            background-color: #17ebff; /* Azul acero para el reverso de las cartas */
+            transform: rotateY(0);
+        }
+        #message {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #ffffff; /* Mensaje en morado suave */
+        }
+        #failures {
+            margin-top: 10px;
+            font-size: 2em;
+            color: #ffffff; /* Fallos en rojo */
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50; /* Botón verde */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #388e3c; /* Verde más oscuro al pasar el ratón */
+        }
+    </style>
+</head>
+<body>
+    <h1>Memory Cards</h1>
+    <div class="memory-game" id="memory-game"></div>
+    <p id="message"></p>
+    <p id="failures">Fallos: 0</p>
+    <button onclick="resetGame()">Reiniciar Juego</button>
+    <button onclick="window.location.href='../index.html'">Volver al Inicio</button>
+
+    <script>
+        const memoryGame = document.getElementById('memory-game');
+        const message = document.getElementById('message');
+        const failuresDisplay = document.getElementById('failures');
+    
+        const maxFailures = 15; // Número máximo de fallos permitidos
+        let failures = 0;
+    
+        const cards = [
+            '🌟', '🌟',
+            '🌍', '🌍',
+            '🎠', '🎠',
+            '🎢', '🎢',
+            '🏰', '🏰',
+            '✈️', '✈️',
+            '🧳', '🧳',
+            '🍷', '🍷',
+            '🥐', '🥐',
+            '🚄', '🚄',
+            '🎭', '🎭',
+            '🎇', '🎇'
+        ];
+    
+        let firstCard = null;
+        let secondCard = null;
+        let lockBoard = false;
+        let matches = 0;
+    
+        function shuffle(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+    
+        function createCards() {
+            shuffle(cards).forEach(symbol => {
+                const card = document.createElement('div');
+                card.classList.add('memory-card');
+                card.innerHTML = ` 
+                    <div class="front-face">${symbol}</div>
+                    <div class="back-face"></div>
+                `;
+                card.addEventListener('click', flipCard);
+                memoryGame.appendChild(card);
+            });
+        }
+    
+        function flipCard() {
+            if (lockBoard || this === firstCard) return;
+    
+            this.classList.add('flip');
+            if (!firstCard) {
+                firstCard = this;
+                return;
+            }
+    
+            secondCard = this;
+            checkForMatch();
+        }
+    
+        function checkForMatch() {
+            const isMatch = firstCard.innerHTML === secondCard.innerHTML;
+            if (isMatch) {
+                setCorrectCards();
+            } else {
+                trackFailure();
+            }
+        }
+    
+        function setCorrectCards() {
+            firstCard.classList.add('correct');
+            secondCard.classList.add('correct');
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            resetBoard();
+            matches++;
+            if (matches === cards.length / 2) {
+                message.textContent = "¡Has encontrado todas las parejas! pero... ¿no huele un poco mal?";
+            }
+        }
+    
+        function trackFailure() {
+            failures++;
+            failuresDisplay.textContent = `Fallos: ${failures}`;
+            if (failures >= maxFailures) {
+                loseGame();
+            } else {
+                unflipCards();
+            }
+        }
+    
+        function unflipCards() {
+            lockBoard = true;
+            setTimeout(() => {
+                firstCard.classList.remove('flip');
+                secondCard.classList.remove('flip');
+                resetBoard();
+            }, 1000);
+        }
+    
+        function loseGame() {
+            message.textContent = "¡HAS PERDIDO! Reinicia el juego.";
+            lockBoard = true; // Bloquea el tablero
+            revealAllCards(); // Voltea todas las cartas
+        }
+    
+        function revealAllCards() {
+            const allCards = document.querySelectorAll('.memory-card');
+            allCards.forEach(card => {
+                card.classList.add('flip');
+                card.removeEventListener('click', flipCard); // Bloquea las interacciones
+            });
+        }
+    
+        function resetBoard() {
+            [firstCard, secondCard, lockBoard] = [null, null, false];
+        }
+    
+        function resetGame() {
+            memoryGame.innerHTML = ''; // Limpiar la grilla
+            message.textContent = ''; // Limpiar el mensaje
+            failuresDisplay.textContent = `Fallos: 0`; // Reiniciar contador de fallos
+            matches = 0; // Reiniciar parejas encontradas
+            failures = 0; // Reiniciar fallos
+            lockBoard = false; // Desbloquear el tablero
+            createCards(); // Crear nuevas cartas
+        }
+    
+        createCards();
+    </script>
+</body>
+</html>
